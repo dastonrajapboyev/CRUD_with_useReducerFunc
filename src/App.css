@@ -4,8 +4,7 @@
   box-sizing: border-box;
 }
 body{
-  background-color: #181818;
-  color: #fff;
+  background-color: #ccc;
   padding-top: 50px;
   margin-left: 300px;
   font-size: 20px;
@@ -16,4 +15,9 @@ input, select,option{
 }
 input{
   margin: 10px 0;
+}
+button{
+  font-size: 20px;
+  margin-left: 10px;
+  padding: 2px 4px;
 }

@@ -1,48 +1,7 @@
 import React, { useReducer } from "react";
 import "./App.css";
 import { users } from "./mock";
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    // delete
-    case "ON_DELETE":
-      let deleted = state.data.filter(
-        (value) => value.id !== action.payload.ids
-      );
-      return { ...state, data: deleted };
-
-    // search or read
-    case "ON_CHANGE":
-      let searched = users.filter((value) =>
-        `${value[state.search]}`
-          .toLowerCase()
-          .includes(action.payload.toLowerCase())
-      );
-      return { ...state, data: searched };
-
-    // search by category
-    case "ON_SELECT":
-      return { ...state, search: action.payload };
-
-    // create new user
-    case "GET_INPUT_VALUE":
-      return { ...state, [action.payload.inputName]: action.payload.value };
-
-    // create a new user and add user
-    case "ADD_USER":
-      let newUser = [
-        ...state.data,
-        {
-          id: state.data.length + 1,
-          name: state.name,
-          status: state.status,
-        },
-      ];
-      return { ...state, data: newUser };
-    default:
-      return state;
-  }
-};
+import { reducer } from "./reducer";
 
 const App = () => {
   const [state, dispatch] = useReducer(reducer, {
@@ -50,7 +9,9 @@ const App = () => {
     search: "",
     name: "",
     status: "",
+    select: null,
   });
+  console.log(state.select);
   return (
     <>
       <select
@@ -110,18 +71,69 @@ const App = () => {
           {state.data.map((value) => (
             <tr key={value.id}>
               <td>{value.id}</td>
-              <td>{value.name}</td>
-              <td>{value.status}</td>
+              <td>
+                {state.select === value.id ? (
+                  <input
+                    name="name"
+                    onChange={(e) =>
+                      dispatch({
+                        type: "GET_INPUT_VALUE",
+                        payload: {
+                          value: e.target.value,
+                          inputName: e.target.name,
+                        },
+                      })
+                    }
+                    type="text"
+                    value={state.name}
+                  />
+                ) : (
+                  value.name
+                )}
+              </td>
+              <td>
+                {state.select === value.id ? (
+                  <input
+                    name="status"
+                    onChange={(e) =>
+                      dispatch({
+                        type: "GET_INPUT_VALUE",
+                        payload: {
+                          value: e.target.value,
+                          inputName: e.target.name,
+                        },
+                      })
+                    }
+                    type="text"
+                    value={state.status}
+                  />
+                ) : (
+                  value.status
+                )}
+              </td>
               <td>
                 <button
                   onClick={() =>
                     dispatch({ type: "ON_DELETE", payload: { ids: value.id } })
-                  }
-                  style={{ fontSize: "20px" }}>
+                  }>
                   delete
                 </button>
+                {state.select === value.id ? (
+                  <button onClick={() => dispatch({ type: "ON_SAVE" })}>
+                    save
+                  </button>
+                ) : (
+                  <button
+                    onClick={() =>
+                      dispatch({
+                        type: "ON_UPDATE",
+                        payload: { allData: value },
+                      })
+                    }>
+                    edit
+                  </button>
+                )}
               </td>
-              {/* <td><button style={{fontSize: '20px'}}>edit</button></td> */}
             </tr>
           ))}
         </tbody>
